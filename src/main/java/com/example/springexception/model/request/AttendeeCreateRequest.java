@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AttendeeCreateRequest {
     @NotBlank(message = "Attendee name cannot be blank")
-    @Size(min = 3, max = 50, message = "Attendee name must be between 3 and 50 characters")
+    @Size(min = 1, max = 50, message = "Attendee name must be between 1 and 50 characters")
     @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Attendee name can only contain letters and spaces")
     @Schema(defaultValue = "Guest User")
     private String attendeeName;

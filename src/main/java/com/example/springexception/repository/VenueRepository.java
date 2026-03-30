@@ -8,11 +8,11 @@ import java.util.List;
 
 @Mapper
 public interface VenueRepository {
-
     @Results(id = "venueMapper", value = {
             @Result(property = "venueId", column = "venue_id"),
             @Result(property = "venueName", column = "venue_name")
     })
+
     @Select("select * from venues LIMIT #{size} OFFSET #{offset}")
     List<VenueModel> getAllVenues(@Param("offset") int offset, @Param("size") Integer size);
 

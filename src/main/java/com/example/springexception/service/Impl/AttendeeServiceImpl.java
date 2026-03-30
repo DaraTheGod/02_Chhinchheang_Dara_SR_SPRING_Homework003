@@ -49,6 +49,16 @@ public class AttendeeServiceImpl implements AttendeeService {
 
     @Override
     public AttendeeModel saveAttendee(AttendeeCreateRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        if (request.getAttendeeName().trim().isEmpty()){
+            errors.put("attendeeName", "Attendee name can only contain letters and spaces");
+        }
+        if (request.getEmail().trim().isEmpty()){
+            errors.put("email", "Email cannot be blank");
+        }
+        if (!errors.isEmpty()) {
+            throw new BadRequestException(errors);
+        }
         if (attendeeRepository.existsByName(request.getAttendeeName())) {
             throw new ConflictException("Attendee name already exists");
         }
@@ -61,6 +71,13 @@ public class AttendeeServiceImpl implements AttendeeService {
     @Override
     public AttendeeModel updateAttendeeById(Long attendeeId, AttendeeUpdateRequest request) {
         validateId(attendeeId);
+        Map<String, String> errors = new HashMap<>();
+        if (request.getAttendeeName().trim().isEmpty()){
+            errors.put("attendeeName", "Attendee name can only contain letters and spaces");
+        }
+        if (!errors.isEmpty()) {
+            throw new BadRequestException(errors);
+        }
         if (attendeeRepository.getNameById(request.getAttendeeName(), attendeeId)) {
             throw new ConflictException("Attendee name already exists");
         }
@@ -83,7 +100,7 @@ public class AttendeeServiceImpl implements AttendeeService {
     private void validateId(Long id) {
         if (id == null || id < 1) {
             Map<String, String> errors = new HashMap<>();
-            errors.put("venueId", "must be greater than 0");
+            errors.put("attendeeId", "must be greater than 0");
             throw new BadRequestException(errors);
         }
     }

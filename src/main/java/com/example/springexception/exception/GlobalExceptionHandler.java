@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Instant;
@@ -23,7 +24,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ProblemDetail> handleNotFound(ResourceNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         pd.setTitle("Not Found");
-        pd.setType(URI.create("http://localhost:8080/errors/not-found"));
+//        pd.setType(URI.create("http://localhost:8080/errors/not-found"));
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/errors/not-found")
+                .build()
+                .toUri();
+        pd.setType(uri);
         pd.setProperty("timestamp", Instant.now());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(pd);
     }
@@ -34,7 +40,6 @@ public class GlobalExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
 
         pd.setTitle("Bad Request");
-//        pd.setDetail("Validation failed");
         pd.setProperty("timestamp", Instant.now());
 
         pd.setProperty("errors", ex.getErrors());
@@ -46,17 +51,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ProblemDetail> handleConflict(ConflictException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         pd.setTitle("Conflict");
-        pd.setType(URI.create("http://localhost:8080/errors/duplicate-user"));
+//        pd.setType(URI.create("http://localhost:8080/errors/duplicate-user"));
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/errors/duplicate-user")
+                .build()
+                .toUri();
+        pd.setType(uri);
         pd.setProperty("timestamp", Instant.now());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(pd);
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ProblemDetail> handleHandlerMethodValidation(
-            HandlerMethodValidationException ex) {
-
+    public ResponseEntity<ProblemDetail> handleHandlerMethodValidation(HandlerMethodValidationException ex) {
         Map<String, String> errors = new HashMap<>();
-
         ex.getParameterValidationResults().forEach(result -> {
             String field = result.getMethodParameter().getParameterName();
 
@@ -64,12 +71,10 @@ public class GlobalExceptionHandler {
                 errors.put(field, error.getDefaultMessage());
             });
         });
-
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         pd.setTitle("Bad Request");
         pd.setDetail("Validation failed");
         pd.setProperty("errors", errors);
-
         return ResponseEntity.badRequest().body(pd);
     }
 
@@ -82,7 +87,12 @@ public class GlobalExceptionHandler {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
         pd.setTitle("Validation Error");
         pd.setProperty("errors", errors);
-        pd.setType(URI.create("http://localhost:8080/errors/validation"));
+//        pd.setType(URI.create("http://localhost:8080/errors/validation"));
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/errors/validation")
+                .build()
+                .toUri();
+        pd.setType(uri);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(pd);
     }
 
@@ -106,10 +116,16 @@ public class GlobalExceptionHandler {
         String message;
         if (ex.getMessage() != null && (ex.getMessage().contains("foreign key") ||
                 ex.getMessage().contains("update or delete"))) {
-            message = "Cannot delete/update this resource. It is still referenced by other records (events/attendees).";
+            message = "Some events still use this venue. Update or delete those events first.";
             ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, message);
             pd.setTitle("Operation Not Allowed");
-            pd.setType(URI.create("http://localhost:8080/errors/conflict"));
+            pd.setProperty("timestamp", Instant.now());
+//            pd.setType(URI.create("http://localhost:8080/errors/conflict"));
+            URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/errors/operation-not-allowed")
+                    .build()
+                    .toUri();
+            pd.setType(uri);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(pd);
         }
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
@@ -124,18 +140,12 @@ public class GlobalExceptionHandler {
         pd.setTitle("Bad Request");
         pd.setDetail("Invalid JSON in request body. Please check syntax.");
         pd.setProperty("timestamp", Instant.now());
-        pd.setType(URI.create("http://localhost:8080/errors/malformed-json"));
-
+//        pd.setType(URI.create("http://localhost:8080/errors/malformed-json"));
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/errors/malformed-json")
+                .build()
+                .toUri();
+        pd.setType(uri);
         return ResponseEntity.badRequest().body(pd);
     }
-
-    // Catch all other exceptions
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ProblemDetail> handleGeneralException(Exception ex) {
-//        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
-//                "An unexpected error occurred");
-//        pd.setTitle("Internal Server Error");
-//        pd.setType(URI.create("http://localhost:8080/errors/internal-server-error"));
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(pd);
-//    }
 }

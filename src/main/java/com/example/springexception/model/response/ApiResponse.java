@@ -47,40 +47,4 @@ public class ApiResponse<T> {
                 .payload(payload)
                 .build();
     }
-
-//    for error response
-//    public static <T> ApiResponse<T> badRequest(String message) {
-//        return ApiResponse.<T>builder()
-//                .message(message)
-//                .status(HttpStatus.BAD_REQUEST.name())
-//                .payload(null)
-//                .timestamp(Instant.now())
-//                .build();
-//    }
-//    public static <T> ApiResponse<T> notFound(String message) {
-//        return ApiResponse.<T>builder()
-//                .message(message)
-//                .status(HttpStatus.NOT_FOUND.name())
-//                .payload(null)
-//                .timestamp(Instant.now())
-//                .build();
-//    }
-//    public static <T> ApiResponse<T> conflict(String message) {
-//        return ApiResponse.<T>builder()
-//                .message(message)
-//                .status(HttpStatus.CONFLICT.name())
-//                .payload(null)
-//                .timestamp(Instant.now())
-//                .build();
-//    }
-
-//    for custom error
-//    public static <T> ApiResponse<T> error(String status, String message) {
-//        return ApiResponse.<T>builder()
-//                .message(message)
-//                .status(status)
-//                .payload(null)
-//                .timestamp(Instant.now())
-//                .build();
-//    }
 }

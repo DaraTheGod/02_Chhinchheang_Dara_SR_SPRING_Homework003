@@ -48,6 +48,16 @@ public class VenueServiceImpl implements VenueService {
 
     @Override
     public VenueModel saveVenue(VenueRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        if (request.getVenueName().trim().isEmpty()){
+            errors.put("venueName", "Venue name cannot be blank");
+        }
+        if (request.getLocation().trim().isEmpty()){
+            errors.put("location", "Location cannot be blank");
+        }
+        if (!errors.isEmpty()) {
+            throw new BadRequestException(errors);
+        }
         if (venueRepository.existsByName(request.getVenueName())) {
             throw new ConflictException("Venue name already exists");
         }
@@ -57,6 +67,16 @@ public class VenueServiceImpl implements VenueService {
     @Override
     public VenueModel updateVenueById(Long venueId, VenueRequest request) {
         validateId(venueId);
+        Map<String, String> errors = new HashMap<>();
+        if (request.getVenueName().trim().isEmpty()){
+            errors.put("venueName", "Venue name cannot be blank");
+        }
+        if (request.getLocation().trim().isEmpty()){
+            errors.put("location", "Location cannot be blank");
+        }
+        if (!errors.isEmpty()) {
+            throw new BadRequestException(errors);
+        }
         if (venueRepository.existsByNameAndIdNot(request.getVenueName(), venueId)) {
             throw new ConflictException("Venue name already exists");
         }
