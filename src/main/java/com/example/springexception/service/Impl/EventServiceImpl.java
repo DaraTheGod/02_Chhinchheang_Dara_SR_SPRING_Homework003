@@ -89,6 +89,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.getEventById(event.getEventId());
     }
 
+    @Transactional
     @Override
     public EventModel updateEventById(Long eventId, EventRequest request) {
         Map<String, String> errors = new HashMap<>();
