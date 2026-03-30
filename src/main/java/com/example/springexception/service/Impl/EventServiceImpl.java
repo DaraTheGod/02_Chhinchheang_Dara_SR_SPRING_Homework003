@@ -112,7 +112,7 @@ public class EventServiceImpl implements EventService {
         if (!errors.isEmpty()) {
             throw new BadRequestException(errors);
         }
-        if (eventRepository.existsByEventNameAndEventDate(request.getEventName(), request.getEventDate())) {
+        if (eventRepository.existsByEventNameAndEventDateAndEventIdNot(request.getEventName(), request.getEventDate(), eventId)) {
             throw new ConflictException("Event name already exists on this date");
         }
         EventModel existingEvent = eventRepository.getEventById(eventId);

@@ -61,4 +61,9 @@ public interface EventRepository {
       returning *
     """)
     EventModel deleteEventById(Long eventId);
+
+    @Select("""
+        SELECT COUNT(*) > 0 FROM events WHERE event_name = #{eventName} AND event_date = #{eventDate} AND event_id != #{eventId}
+    """)
+    boolean existsByEventNameAndEventDateAndEventIdNot(String eventName, LocalDate eventDate, Long eventId);
 }
